@@ -2,17 +2,15 @@
   "name": "auto-deployer-of-a-site-from-bacup",
   "version": "1.0.0",
   "description": "Downloads backup file from server, deploys site locally",
-  "author": "Renat Yakubov <pub@renat.biz>",
+  "author": "Renat Yakubov",
   "keywords": [
     "backup",
     "deploy"
   ],
   "dependencies": {
-    "child-process-promise": "*",
-    "fs-extra": "*",
-    "jStat": "^1.5.3",
-    "ssh2": "*",
-    "ps-tree": "*"
+    "fs-extra": "2.0.0",
+    "ssh2": "0.5.4",
+    "ps-tree": "1.1.0"
   },
   "license": "MIT"
 }
