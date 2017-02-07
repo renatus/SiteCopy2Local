@@ -1,0 +1,12 @@
+# Lots of ultra-sensitive data #
+appConf.json
+# Info on previous app runs, don't need to share it #
+appData.json
+# Node packages we don't have to save, better to install them via NPM #
+node_modules
+# Folder with NetBeans configuration files #
+nbproject
+# Folder with temporary files, like local archive copies #
+tmp
+# Folder with permanent files, like local archive copies #
+permanent
