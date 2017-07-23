@@ -18,7 +18,12 @@ And use such command to start:
 nodejs /PATH/TO/SCRIPT/site2local/site2local.js
 You may (and, likely, should) add this command to CRON. It may be reasonable to
 run it every hour, so relatively soon after switching on your PC local site copy
-will be updated.
+will be updated. Use this command:
+crontab -e
+Note, that normally we should not use sudo here, so all tasks will be done on
+behalf your regular user, not root.
+Add this line to the file:
+37 * * * * nodejs /PATH/TO/site2local.js
 
 However, you need to configure app before the first start.
 
