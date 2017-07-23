@@ -10,6 +10,9 @@
 "localSiteFolder":"/home/USERNAME/dev/www/your.site.biz/",
 "sqldumpName":"dbbackup.sql",
 
+"localUserID": 1000,
+"localGroupID": 1000,
+
 "remoteHost":"198.244.28.66",
 "remotePort":22,
 "remoteUsername":"USERNAME",
