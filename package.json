@@ -1,15 +1,15 @@
 {
-  "name": "auto-deployer-of-a-site-from-bacup",
+  "name": "auto-deployer-of-a-site-from-backup",
   "version": "1.0.0",
   "description": "Downloads backup file from server, deploys site locally",
-  "author": "Renat Yakubov",
+  "author": "Renat Iakubov",
   "keywords": [
     "backup",
     "deploy"
   ],
   "dependencies": {
-    "fs-extra": "2.0.0",
-    "ssh2": "0.5.4",
+    "fs-extra": "4.0.0",
+    "ssh2": "0.5.5",
     "ps-tree": "1.1.0"
   },
   "license": "MIT"
