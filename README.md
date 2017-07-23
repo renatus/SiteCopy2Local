@@ -57,6 +57,10 @@ site's copy.
 "sqldumpName" should contain your .sql DB backup file name. It should reside in
 folder next to your index.php file.
 
+"localUserID" should contain your Linux user ID, like 1000. Use "id -u USERNAME" command to get it.
+
+"localGroupID" should contain your Linux group ID, like 1000. Use "id -g GROUPNAME" command to get it.
+
 "remoteHost" should contain IP address of your server.
 
 "remotePort" should contain port number to connect to your server via SSH.
