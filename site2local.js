@@ -10,23 +10,23 @@
 // Node.js convention of providing a single callback as the last argument of
 // your asynchronous function -- a callback which expects an Error as its first
 // argument -- and calling the callback once.
-
-
-
+ 
+ 
+ 
 // We may use "const" instead of "var" here, but "const" usage may decrease performance in Chrome (while increasing it a bit at Firefox)
 // https://jsperf.com/const-vs-var-mod-3
-
+ 
 // From NodeJS core
-//var path = require('path');
+var path = require('path');
 //var fs = require("fs"); //Load the filesystem module
-
+ 
 // You've to use http for http and https for https
 var http = require('http');
 //var https = require('https');
-
+ 
 // Need this to execute Shell commands
 var exec = require('child_process').exec;
-
+ 
 // From ps-tree package
 // You may kill .exec child process with child.kill()
 // Or just by providing an optional argument {timeout: 5000}, when initiating it
@@ -41,20 +41,20 @@ var Client = require('ssh2').Client;
 // Fs-extra is an advansed filesystem module, and drop-in replacement for fs
 // It supports everything fs core module supports - and more
 var fs = require("fs-extra"); 
-
+ 
 // Load app settings
 // You don't have to load and parse JSON file explicitly, just use "require"
 var appConf = require("./appConf.json");
-
+ 
 // Load app "database"-object - it stores data on things like last successfull run, etc.
 var appDataObj = require("./appData.json");
-
-
-
+ 
+ 
+ 
 // appRoot will give you a folder name, where you've initiated your script, NOT the folder it's actually located
 // Same is true for ./
 //var appRoot = process.cwd();
-
+ 
 // Compute archive name we're going to work with based on current time.
 var dateTime = new Date();
 // Current timestamp - 10 minutes (we don't want to try to download archive which is being created right now)
@@ -64,7 +64,7 @@ var curMonth = ((dateTime.getUTCMonth()+1)<10?'0':'') + (dateTime.getUTCMonth()+
 // JS counts January as 0th month, you've to use according month numeration for all calculations
 var curMonthJS = (dateTime.getUTCMonth()<10?'0':'') + dateTime.getUTCMonth();
 var curDate = (dateTime.getUTCDate()<10?'0':'') + dateTime.getUTCDate();
-
+ 
 // Get yesterday date (may be in previous month or even year)
 var dateTimeYest = new Date();
 // Minus one day
@@ -72,7 +72,7 @@ dateTimeYest.setDate(dateTimeYest.getDate() - 1);
 var yestYear = dateTimeYest.getUTCFullYear();
 var yestMonth = ((dateTimeYest.getUTCMonth()+1)<10?'0':'') + (dateTimeYest.getUTCMonth()+1);
 var yestDate = (dateTimeYest.getUTCDate()<10?'0':'') + dateTimeYest.getUTCDate();
-
+ 
 // Get timeslots for today's backups
 // Date.UTC(YYYY,MM,DD,HH,MM)
 // var backupTime1 = new Date(Date.UTC(2016,11,07,07,17)).getTime();
@@ -80,7 +80,7 @@ var yestDate = (dateTimeYest.getUTCDate()<10?'0':'') + dateTimeYest.getUTCDate()
 var backupTime1 = new Date(Date.UTC(curYear,curMonthJS,curDate,appConf["backupHour1"],appConf["backupMin1"])).getTime();
 // Second backup
 var backupTime2 = new Date(Date.UTC(curYear,curMonthJS,curDate,appConf["backupHour2"],appConf["backupMin2"])).getTime();
-
+ 
 // Generate filename, like 2016_11_06-0717-your_site_backup.tar.gz
 var fileName = "";
 if (dateTimeStamp < backupTime1) {
@@ -97,11 +97,11 @@ if (dateTimeStamp < backupTime1) {
   // We've to use last backup for today
   fileName = curYear + "_" + curMonth + "_" + curDate + "-" + appConf["backupHour2"] + appConf["backupMin2"] + appConf["backupNameEnd"];
 }
-
-
-
+ 
+ 
+ 
 //+ Working with subfolders for temporary backup storage (like 2017_02)
-
+ 
 // appConf["localTmpBackupsFolder"] may contain either global path, like:
 // /home/USERNAME/backups
 // or relative (to app's root directory) path, like
@@ -122,15 +122,15 @@ var curBackupFolderPath = tmpBackupFolderPath + "/" + curYear + "_" + curMonth;
 // Backup filepath, like /home/USERNAME/nodeapp/tmp/backups/2016_11/2016_11_06-0717-your_site_backup.tar.gz
 var curBackupFilePath = curBackupFolderPath + "/" + fileName;
 //console.log("Current backup path: " + curBackupFilePath);
-
+ 
 // Create temporary backup folder for current month (like 2017_02) if it doesn't exist
 fs.ensureDir(curBackupFolderPath, function (err) {
   if (err) return console.error(err);
   // Folder has now been created, including the directory it is to be placed in
 });
-
-
-
+ 
+ 
+ 
 // Function to delete all temporary backup folders (like 2016_09) and their content, that are older, than X months
 // Exact number of months should be chosen by user, see appConf["backupStoreTempForXMonths"]
 // Process is async, but we don't have to wait for it's end to proceed
@@ -141,7 +141,7 @@ function delOldTmpBackupFolders() {
     folderNamesArr = items;
     // Place folder names in reverse order, from newest to oldest (2017_02, 2017_01, ...)
     folderNamesArr = folderNamesArr.reverse();
-
+ 
     // Iterate through all folder names
     for (var i = 0; i < folderNamesArr.length; i++) {
       // If folder is older, than X months, delete it
@@ -158,13 +158,13 @@ function delOldTmpBackupFolders() {
     }
   });
 }
-
+ 
 //- Working with subfolders for temporary backup storage (like 2017_02)
-
-
-
+ 
+ 
+ 
 console.log("We're about to process " + fileName);
-
+ 
 // Save archive name to indicate we've worked with it
 appDataObj["lastRunFileName"] = fileName;
 // Save date and time when we've started our program
@@ -172,18 +172,18 @@ appDataObj["lastRunStartTimeTxt"] = dateTime.toString();
 appDataObj["lastRunStartTimestamp"] = dateTimeStamp;
 // Save appData object to JSON file
 writeAppData();
-
-
-
-
+ 
+ 
+ 
+ 
 if(appDataObj["lastSuccessFileName"] != fileName) {
   // If we've not successfully processed archive with such a name yet
   fileDownload();
 } else {
   console.log("We've successfully processed this archive already, next will be imported in a time you've set at appConf.json file.");
 }
-
-
+ 
+ 
 // Download site's archive from remote server 
 function fileDownload(){
   // Connect to server via SSH
@@ -193,7 +193,7 @@ function fileDownload(){
   
     conn.sftp(function(err, sftp) {
       if (err) throw err;
-
+ 
       // First argument - full path to file at remote machine, second - to a copy we're about to create at local machine
       sftp.fastGet(appConf["remoteBackupFolder"] + fileName, curBackupFilePath, function(err, list) {
         if (err) throw err;
@@ -238,22 +238,22 @@ function fileDownload(){
     password: appConf["remotePassword"]
   });
 }
-
-
-
+ 
+ 
+ 
 // Extract content from backup archive
 function fileUntar(fileName) {
   // We'll delete old site's files in a first place, to shut down site for an update process
   fs.emptyDir(appConf["localSiteFolder"], function (err) {
     if (!err) console.log("Old site's files were deleted.");
-
+ 
     // Path to folder, where we'll extract content from the archive
     // Something like /home/USERNAME/dev/localcopy/tmp/var/www/YOURSITE.COM/
     // Archive recreates server file structure at tmp folder, like /var/www/YOURSITE.COM/
     var tmpSiteFolder = localTmpFolder + appConf["remoteSiteFolder"];
     // Path to DB backup file
     var sqldumpPath = tmpSiteFolder + appConf["sqldumpName"];
-
+ 
     // Example comand to extract archive content:
     // exec('tar -zxvf ' + curBackupFilePath, {maxBuffer: 1024000}, (error, stdout, stderr) => {
     // Without {maxBuffer: 1024000} you may face an error:
@@ -263,11 +263,11 @@ function fileUntar(fileName) {
         console.error(`exec error: ${error}`);
         return;
       }
-
+ 
       //console.log(`stdout: ${stdout}`);
       //console.log(`stderr: ${stderr}`);
       if (stderr) return console.error(stderr);
-
+ 
       // Copy site's files to their permanent location
       fs.copy(tmpSiteFolder, appConf["localSiteFolder"], function (err) {
         if (err) return console.error(err);
@@ -280,13 +280,23 @@ function fileUntar(fileName) {
         // not to store backups temporarily, but we need current backup, up to
         // this moment.
         delOldTmpBackupFolders();
+        
+        // Set proper ownership for all files and subfolders of our site
+        // Something like that: chownr("/path/to/site/", 1000, 1000, function (err) {
+        // Use "id -u USERNAME" and "id -g GROUPNAME" commands to get user ID and group ID for respective user and group
+        // Normally we don't need it, if we don't use sudo to run .js file, or to set CRON task to run it
+        chownr(appConf["localSiteFolder"], appConf["localUserID"], appConf["localGroupID"], function (err) {
+          if (err) return console.error(err);
+          console.log("Ownership was set for site's files and folders");
+        });
+        
       });
     });
   });
 }
-
-
-
+ 
+ 
+ 
 // Replace old version of your site's database with a new one
 function dbDrop(sqldumpPath){
 // List of commands we should execute:
@@ -294,7 +304,7 @@ function dbDrop(sqldumpPath){
 // mysql -uroot -pPASSWORD -e "CREATE DATABASE tstbase";
 // mysql -uroot -pPASSWORD -e "GRANT ALL ON tstbase.* TO 'tstbaseuser'@'localhost' IDENTIFIED BY 'tstbaseuserpassword'";
 // mysql -uroot -pPASSWORD tstbase < dbbackup.sql
-
+ 
   // Drop existing database
   exec("mysql -u" + appConf["localMysqlRootUname"] + " -p" + appConf["localMysqlRootUpass"] + ' -e "DROP DATABASE ' + appConf["remoteMysqlSiteDbName"] + '";', {maxBuffer: 1024000}, (error, stdout, stderr) => {
     if (error) {
@@ -306,7 +316,7 @@ function dbDrop(sqldumpPath){
     }
   }); 
 }
-
+ 
 // Create new database
 function dbCreate(sqldumpPath){
   exec("mysql -u" + appConf["localMysqlRootUname"] + " -p" + appConf["localMysqlRootUpass"] + ' -e "CREATE DATABASE ' + appConf["remoteMysqlSiteDbName"] + '";', {maxBuffer: 1024000}, (error, stdout, stderr) => {
@@ -319,7 +329,7 @@ function dbCreate(sqldumpPath){
     }
   });
 }
-
+ 
 // Grant necessary permissions to MySQL user
 function dbGrant(sqldumpPath){
   exec("mysql -u" + appConf["localMysqlRootUname"] + " -p" + appConf["localMysqlRootUpass"] + ' -e "GRANT ALL ON ' + appConf["remoteMysqlSiteDbName"] + ".* TO '" + appConf["remoteMysqlSiteUname"] + "'@'localhost' IDENTIFIED BY '" + appConf["remoteMysqlSiteUpass"] + "'" + '";', {maxBuffer: 1024000}, (error, stdout, stderr) => {
@@ -332,7 +342,7 @@ function dbGrant(sqldumpPath){
     }
   });
 }
-
+ 
 // Import data from .sql file to new database
 function dbReplace(sqldumpPath){
   // Code after exec statement will be executed before exec was executed
@@ -349,7 +359,7 @@ function dbReplace(sqldumpPath){
       appDataObj["lastSuccessTimestamp"] = endDateTime.getTime();
       // Save appData object to JSON file
       writeAppData();
-
+ 
       console.log("Database content was imported from .sql file");
       console.log("Local copy of site at " + appConf["localSiteFolder"] + " was updated!");
       console.log("Process has started at " + dateTime.toString());
@@ -371,7 +381,7 @@ function dbReplace(sqldumpPath){
   });
   console.log("Database content import from .sql file was started.");
 }
-
+ 
 // Write app "database"-object to JSON file
 // It stores data on things like last successfull run, etc.
 function writeAppData(){
@@ -379,10 +389,42 @@ function writeAppData(){
   fs.writeFile(__dirname + "/appData.json", JSON.stringify(appDataObj, null, 2) , 'utf-8');
 }
 
+// Recursive chown, like "chown -R"
+// Takes the same arguments as fs.chown()
+// Something like that: chownr("/path/to/site/", 1000, 1000, function (err) {
+// Use "id -u USERNAME" and "id -g GROUPNAME" commands to get user ID and group ID for respective user and group
+// Requires "fs" and "path" variables/constants
+// https://github.com/isaacs/chownr
+// https://github.com/isaacs/chmodr
+function chownr (p, uid, gid, cb) {
+  fs.readdir(p, function (er, children) {
+    // Any error other than ENOTDIR means it's not readable, or doesn't exist. Give up.
+    if (er && er.code !== "ENOTDIR") return cb(er);
+    if (er || !children.length) return fs.chown(p, uid, gid, cb);
 
-
+    var len = children.length;
+    var errState = null;
+    children.forEach(function (child) {
+      var pathChild = path.resolve(p, child);
+      fs.lstat(pathChild, function(er, stats) {
+        if (er) return cb(er);
+        if (!stats.isSymbolicLink()) chownr(pathChild, uid, gid, then);
+        else
+          then();
+        });
+    });
+    function then (er) {
+      if (errState) return;
+      if (er) return cb(errState = er);
+      if (-- len === 0) return fs.chown(p, uid, gid, cb);
+    }
+  });
+}
+ 
+ 
+ 
 //+ Load front page of a site's local copy, so it'll start quicker next time
-
+ 
 // Function to load given web page
 // Callback argument is a callback function name
 // Host, path and port examples: 'localhost', '/index.php', 8000
@@ -414,7 +456,7 @@ function makeHTTPSRequest(urlHost, urlRelPath, urlPort, callback) {
     });
   });
 }
-
+ 
 // Process web page content, after page request has finished
 function processRequestResults(pageBody) {
   // Print HTML code of requested page
@@ -428,13 +470,13 @@ function processRequestResults(pageBody) {
   // since rogue children are more likely to give us severe failures, when killed,
   // because the OS won't auto-kill them when the parent exits.
 }
-
-
-
+ 
+ 
+ 
 // Function to kill child porcess with own childs - i.e. PHP built-in server
 // Don't forget to require 'ps-tree' for this function to work
 // Looks like ps-tree only works on UNIX-like OSes, for Windows you should use taskkill utility
-// http://krasimirtsonev.com/blog/article/Nodejs-managing-child-processes-starting-stopping-exec-spawn
+// http://krasimirtsonev.com/blog/article/Nodejs-managing-child-processes-s...
 function kill(pid, signal, callback) {
   signal   = signal || 'SIGKILL';
   callback = callback || function () {};
@@ -457,9 +499,9 @@ function kill(pid, signal, callback) {
     callback();
   }
 };
-
-
-
+ 
+ 
+ 
 // Start PHP built-in server
 // child variable should be global, since we need to call it from other functions to stop PHP server
 var child = '';
@@ -478,11 +520,11 @@ function startPhpServer() {
     console.log(`stderr: ${stderr}`);
   });
 }
-
+ 
 //- Load front page of a site's local copy, so it'll start quicker next time
-
-
-
+ 
+ 
+ 
 // Save archive permanently once in X days, if it's time to do so
 function backupStorePerm() {
   // Number of milliseconds in X days
@@ -499,7 +541,7 @@ function backupStorePerm() {
     // Count time (in seconds) since we've stored a file last time
     var backupStorePermTimeSinceLast = curTimestamp - appDataObj["backupStorePermLastTimestamp"];
   }
-
+ 
   // If no archives were stored permanently yet, or a given period has passed already since then
   if(!appDataObj["backupStorePermLastTimestamp"] || backupStorePermTimeSinceLast > backupStorePermEveryXMilSeconds) {
     console.log("It's time to store archive file permanently.");
@@ -524,13 +566,13 @@ function backupStorePerm() {
     fs.ensureDir(permBackupFolderPath, function (err) {
       if (err) return console.error(err);
       // Folder has now been created, including the directory it is to be placed in
-
+ 
       // Copy site's archive to it's permanent location
       fs.copy(curBackupFilePath, permBackupFilePath, function (err) {
         if (err) return console.error(err);
       });
     });
-
+ 
     appDataObj["backupStorePermLastTimeTxt"] = curTimeTxt;
     appDataObj["backupStorePermLastTimestamp"] = curTimestamp;
     appDataObj["backupStorePermLastFileName"] = fileName;
