@@ -1,6 +1,6 @@
 {
   "name": "auto-deployer-of-a-site-from-backup",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Downloads backup file from server, deploys site locally",
   "author": "Renat Iakubov",
   "keywords": [
